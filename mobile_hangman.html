@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Ultimate Hangman Challenge - Mobile</title>
+    <link rel="stylesheet" href="mobile_style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+    <div class="container">
+        <!-- Mode Selection Modal -->
+        <div id="modeModal" class="modal">
+            <div class="modal-content">
+                <h2>🎮 Choose Game Mode</h2>
+                <p>Select how you want to play:</p>
+                <button id="singlePlayerBtn" class="mode-btn single-player">
+                    <span class="emoji">🎯</span>
+                    <span class="mode-title">Single Player</span>
+                    <span class="mode-desc">Challenge yourself with progressive levels</span>
+                </button>
+                <button id="twoPlayerBtn" class="mode-btn two-player">
+                    <span class="emoji">👥</span>
+                    <span class="mode-title">Two Player</span>
+                    <span class="mode-desc">Compete with a friend</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Player Names Modal -->
+        <div id="namesModal" class="modal">
+            <div class="modal-content">
+                <h2>👥 Enter Player Names</h2>
+                <div class="input-group">
+                    <label for="player1Name">Player 1:</label>
+                    <input type="text" id="player1Name" placeholder="Enter name" maxlength="15">
+                </div>
+                <div class="input-group">
+                    <label for="player2Name">Player 2:</label>
+                    <input type="text" id="player2Name" placeholder="Enter name" maxlength="15">
+                </div>
+                <button id="startGameBtn" class="start-btn">🚀 Start Game</button>
+            </div>
+        </div>
+
+        <!-- Game Header -->
+        <header class="game-header">
+            <h1 class="game-title">Ultimate Hangman Challenge</h1>
+            <div class="game-subtitle" id="gameSubtitle">Guess the word with cryptic clues!</div>
+        </header>
+
+        <!-- Game Info -->
+        <div class="game-info" id="gameInfo">
+            <!-- Single Player Info -->
+            <div id="singlePlayerInfo" class="info-section">
+                <div class="info-item">
+                    <span class="info-label">Level:</span>
+                    <span id="levelDisplay">1/5</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Score:</span>
+                    <span id="scoreDisplay">0</span>
+                </div>
+            </div>
+
+            <!-- Two Player Info -->
+            <div id="twoPlayerInfo" class="info-section" style="display: none;">
+                <div class="current-player">
+                    <span id="currentPlayerDisplay">Player 1's Turn</span>
+                </div>
+                <div class="scores">
+                    <div class="player-score" id="player1Score">Player 1: 0</div>
+                    <div class="round-info" id="roundDisplay">Round: 1/5</div>
+                    <div class="player-score" id="player2Score">Player 2: 0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Board -->
+        <div class="game-board">
+            <!-- Hangman Drawing -->
+            <div class="hangman-container">
+                <canvas id="hangmanCanvas" width="200" height="250"></canvas>
+                <div class="lives-display" id="livesDisplay">❤️❤️❤️❤️❤️❤️ (6)</div>
+            </div>
+
+            <!-- Game Content -->
+            <div class="game-content">
+                <!-- Clue Section -->
+                <div class="clue-section">
+                    <div class="section-title">💡 CLUE</div>
+                    <div class="clue-text" id="clueText">Loading...</div>
+                </div>
+
+                <!-- Word Display -->
+                <div class="word-section">
+                    <div class="section-title">🔤 WORD</div>
+                    <div class="word-display" id="wordDisplay">_ _ _ _ _</div>
+                </div>
+
+                <!-- Input Section -->
+                <div class="input-section">
+                    <div class="section-title">✏️ MAKE YOUR GUESS</div>
+                    <div class="input-controls">
+                        <input type="text" id="guessInput" maxlength="1" placeholder="?" autocomplete="off">
+                        <button id="guessBtn" class="guess-btn">GUESS!</button>
+                    </div>
+                </div>
+
+                <!-- Guessed Letters -->
+                <div class="guessed-section">
+                    <div class="section-title">📝 GUESSED LETTERS</div>
+                    <div class="guessed-letters" id="guessedLetters">None yet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control Buttons -->
+        <div class="controls">
+            <button id="newGameBtn" class="control-btn new-game">
+                <span class="btn-emoji">🔄</span>
+                <span class="btn-text">New Game</span>
+            </button>
+            <button id="nextLevelBtn" class="control-btn next-level" style="display: none;">
+                <span class="btn-emoji">⬆️</span>
+                <span class="btn-text">Next Level</span>
+            </button>
+            <button id="resetBtn" class="control-btn reset">
+                <span class="btn-emoji">🏠</span>
+                <span class="btn-text">Reset</span>
+            </button>
+        </div>
+
+        <!-- Virtual Keyboard -->
+        <div class="virtual-keyboard" id="virtualKeyboard">
+            <div class="keyboard-row">
+                <button class="key" data-key="Q">Q</button>
+                <button class="key" data-key="W">W</button>
+                <button class="key" data-key="E">E</button>
+                <button class="key" data-key="R">R</button>
+                <button class="key" data-key="T">T</button>
+                <button class="key" data-key="Y">Y</button>
+                <button class="key" data-key="U">U</button>
+                <button class="key" data-key="I">I</button>
+                <button class="key" data-key="O">O</button>
+                <button class="key" data-key="P">P</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="key" data-key="A">A</button>
+                <button class="key" data-key="S">S</button>
+                <button class="key" data-key="D">D</button>
+                <button class="key" data-key="F">F</button>
+                <button class="key" data-key="G">G</button>
+                <button class="key" data-key="H">H</button>
+                <button class="key" data-key="J">J</button>
+                <button class="key" data-key="K">K</button>
+                <button class="key" data-key="L">L</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="key" data-key="Z">Z</button>
+                <button class="key" data-key="X">X</button>
+                <button class="key" data-key="C">C</button>
+                <button class="key" data-key="V">V</button>
+                <button class="key" data-key="B">B</button>
+                <button class="key" data-key="N">N</button>
+                <button class="key" data-key="M">M</button>
+                <button class="key backspace" data-key="BACKSPACE">⌫</button>
+            </div>
+        </div>
+
+        <!-- Help Text -->
+        <div class="help-text">
+            <div id="helpText">💡 Tap letters on the virtual keyboard to make guesses!</div>
+        </div>
+    </div>
+
+    <script src="mobile_game.js"></script>
+</body>
+</html>
